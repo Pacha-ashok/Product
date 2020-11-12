@@ -4,8 +4,12 @@ class ProductsController < ApplicationController
 	def import
 		begin
 		 file =  "/home/pashok@idexcel.internal/Desktop/product_details.csv"
-		  Product.import(file)
-	    render json: { message: 'Data has been sucessfully saved'}, status: :ok
+		  prd = Product.import(file)
+		  if prd[:status]  == 'create'
+	     render json: { message: 'Data has been sucessfully saved',status: :ok}
+	    else
+	     render json: { message: 'Data has been sucessfully updated',status: :ok}
+	    end
 	  rescue StandardError => e
 	    logger.info e
 	    render json: e.to_s, status: :unprocessable_entity
@@ -41,7 +45,7 @@ class ProductsController < ApplicationController
 			end
 			article = Article.import(articals, :validate => false) if articals.present?
 		  if article.present?
-       render json: { message: 'Data has been sucessfully saved'}, status: :ok
+       render json: { message: 'Data has been sucessfully saved', status: :ok}
 		  end
 		rescue StandardError => e
 	    logger.info e
